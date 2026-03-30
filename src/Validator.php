@@ -94,13 +94,13 @@ class Validator
 
         $value = $this->inputContainer->getAttributeValue();
 
-        $this->setValidatedData($fieldKey, $this->_data, $value);
-
         if (\in_array('nullable', $rules) && $this->isEmpty($value)) {
+            $this->setValidatedData($fieldKey, $this->inputContainer->getData(), $value);
             return;
         }
 
         $this->validateByRules($fieldKey, $value, $rules);
+        $this->setValidatedData($fieldKey, $this->inputContainer->getData(), $this->inputContainer->getAttributeValue());
     }
 
     public function validateByRules($fieldKey, $value, $rules): void
@@ -206,7 +206,11 @@ class Validator
                 throw new MethodNotFoundException($sanitizationMethod);
             }
 
-            $value = $this->{$sanitizationMethod}($value, $params);
+            if ($sanitizationMethod === 'sanitizeWpkses' && ! empty($params)) {
+                $value = $this->{$sanitizationMethod}($value, $params);
+            } else {
+                $value = $this->{$sanitizationMethod}($value);
+            }
         }
 
         return $value;
