@@ -1,5 +1,4 @@
 <?php
-
 namespace BitApps\WPValidator;
 
 class ErrorBag
@@ -17,7 +16,7 @@ class ErrorBag
 
         $defaultPlaceholders = [
             'attribute' => $role->getInputDataContainer()->getAttributeLabel(),
-            'value' => $role->getInputDataContainer()->getAttributeValue(),
+            'value'     => $role->getInputDataContainer()->getAttributeValue(),
         ];
 
         $placeholders = array_merge($paramValues, $defaultPlaceholders);
@@ -51,7 +50,7 @@ class ErrorBag
         return $message;
     }
 
-    public function getErrors($field = null)
+    public function getErrors()
     {
         return $this->errors;
     }
@@ -59,9 +58,9 @@ class ErrorBag
     public function hasErrors($field = null): bool
     {
         if ($field === null) {
-            return !empty($this->errors);
+            return ! empty($this->errors);
         }
 
-        return isset($this->errors[$field]) && !empty($this->errors[$field]);
+        return isset($this->errors[$field]) && ! empty($this->errors[$field]);
     }
 }
