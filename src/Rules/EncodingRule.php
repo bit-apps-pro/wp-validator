@@ -27,12 +27,24 @@ class EncodingRule extends Rule
             return false;
         }
 
-        $contents = file_get_contents($filePath);
+        $contents = $this->getFileContentForEncodingDetection($filePath);
         if ($contents === false) {
             return false;
         }
 
         return mb_detect_encoding($contents, $allowedEncodings, true) !== false;
+    }
+
+    private function getFileContentForEncodingDetection($filePath)
+    {
+        if (function_exists('WP_Filesystem')) {
+            global $wp_filesystem;
+            WP_Filesystem();
+            $contents = $wp_filesystem->get_contents($filePath);
+            return $contents !== false ? substr($contents, 0, 32768) : false;
+        }
+
+        return file_get_contents($filePath, false, null, 0, 32768);
     }
 
     private function getFilePath($value)

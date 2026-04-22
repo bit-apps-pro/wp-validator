@@ -61,11 +61,11 @@ class MimesRule extends Rule
             ];
         }
 
-        // Handle $_FILES format
-        if (is_array($value) && isset($value['name']) && isset($value['type'])) {
+        if (is_array($value) && isset($value['name'], $value['tmp_name'])) {
+            $checked = wp_check_filetype_and_ext($value['tmp_name'], $value['name']);
             return [
                 'name' => $value['name'],
-                'type' => $value['type'],
+                'type' => $checked['type'] ?? '',
             ];
         }
 

@@ -20,7 +20,7 @@ class BetweenRule extends Rule
         $max = (int) $this->getParameter('max');
 
         if (is_array($value) && isset($value['size'])) {
-            $sizeKB = (int) $value['size'] / 1024;
+            $sizeKB = (int) round($value['size'] / 1024);
             return $sizeKB >= $min && $sizeKB <= $max;
         }
 
@@ -28,7 +28,7 @@ class BetweenRule extends Rule
             $attachmentId = (int) $value;
             $filePath     = get_attached_file($attachmentId);
             if (! empty($filePath) && file_exists($filePath)) {
-                $sizeKB = $this->getAttachmentSizeBytes($attachmentId, $filePath) / 1024;
+                $sizeKB = (int) round($this->getAttachmentSizeBytes($attachmentId, $filePath) / 1024);
                 return $sizeKB >= $min && $sizeKB <= $max;
             }
         }
