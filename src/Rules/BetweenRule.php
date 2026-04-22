@@ -17,17 +17,28 @@ class BetweenRule extends Rule
         $this->checkRequiredParameter($this->requireParameters);
 
         $min = (int) $this->getParameter('min');
-
         $max = (int) $this->getParameter('max');
 
-        $length = $this->getValueLength($value);
-
-        if ($length) {
-            return $length >= $min && $length <= $max;
+        if (is_array($value) && isset($value['size'])) {
+            $sizeKB = (int) $value['size'] / 1024;
+            return $sizeKB >= $min && $sizeKB <= $max;
         }
 
-        return false;
+        if (is_numeric($value) && function_exists('get_attached_file')) {
+            $attachmentId = (int) $value;
+            $filePath     = get_attached_file($attachmentId);
+            if (! empty($filePath) && file_exists($filePath)) {
+                $sizeKB = $this->getAttachmentSizeBytes($attachmentId, $filePath) / 1024;
+                return $sizeKB >= $min && $sizeKB <= $max;
+            }
+        }
 
+        $length = $this->getValueLength($value);
+        if ($length === false) {
+            return false;
+        }
+
+        return $length >= $min && $length <= $max;
     }
 
     public function getParamKeys()

@@ -46,7 +46,10 @@ abstract class Rule
 
     public function setParameterValues($paramKeys, $paramValues): void
     {
-        if (count($paramKeys) === count($paramValues)) {
+        if (count($paramKeys) === 1 && count($paramValues) > 1) {
+            // Single-key rules that accept comma-separated values (e.g. mimes:jpg,png,pdf)
+            $this->params = [$paramKeys[0] => implode(',', $paramValues)];
+        } elseif (count($paramKeys) === count($paramValues)) {
             $this->params = array_combine($paramKeys, $paramValues);
         }
     }

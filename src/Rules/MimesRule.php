@@ -32,19 +32,13 @@ class MimesRule extends Rule
             return false;
         }
 
-        $fileType = $fileInfo['type'];
-        $fileName = $fileInfo['name'];
-
-        if (in_array($fileType, $allowedTypes, true)) {
+        if (in_array($fileInfo['type'], $allowedTypes, true)) {
             return true;
         }
 
-        $wpFileType = wp_check_filetype($fileName);
+        $wpFileType = wp_check_filetype($fileInfo['name']);
         if ($wpFileType && isset($wpFileType['ext'])) {
-            $extension = strtolower($wpFileType['ext']);
-            if (in_array($extension, $allowedTypes, true)) {
-                return true;
-            }
+            return in_array(strtolower($wpFileType['ext']), $allowedTypes, true);
         }
 
         return false;

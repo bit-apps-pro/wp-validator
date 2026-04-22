@@ -40,13 +40,7 @@ class MaxFileRule extends Rule
                 return false;
             }
 
-            $metadata = wp_get_attachment_metadata($attachmentId);
-            if ($metadata && isset($metadata['file'])) {
-                $fileSize = filesize($filePath);
-                return $fileSize !== false ? $fileSize : false;
-            }
-
-            return filesize($filePath);
+            return $this->getAttachmentSizeBytes($attachmentId, $filePath);
         }
 
         if (is_array($value) && isset($value['size'])) {

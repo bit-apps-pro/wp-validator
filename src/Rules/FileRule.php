@@ -23,11 +23,9 @@ class FileRule extends Rule
         }
 
         if (is_array($value)) {
-            $requiredKeys = ['name', 'type', 'tmp_name', 'error', 'size'];
-            foreach ($requiredKeys as $key) {
-                if (! isset($value[$key])) {
-                    return false;
-                }
+            $requiredKeys = array_flip(['name', 'type', 'tmp_name', 'error', 'size']);
+            if (array_diff_key($requiredKeys, $value)) {
+                return false;
             }
 
             if ($value['error'] !== UPLOAD_ERR_OK) {
