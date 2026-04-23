@@ -207,9 +207,10 @@ e.g. `['avatar' => ['required', 'file', 'max_file:2048']]` (2MB limit)
 29. **`image`**<br/>
 Checks if the file under validation is an image using WordPress allowed image MIME types.<br/>
 e.g. `['photo' => ['required', 'file', 'image']]`
-30. **`image_dimensions:width,height`**<br/>
-Checks if the image dimensions (in pixels) are less than or equal to the specified maximum width and height.<br/>
-e.g. `['avatar' => ['required', 'file', 'image', 'image_dimensions:1920,1080']]`
+30. **`dimension:constraint=value,...`**<br/>
+Checks image dimensions against one or more constraints. Available constraints: `min_width`, `max_width`, `min_height`, `max_height`, `width` (exact), `height` (exact), `ratio` (as fraction `3/2` or float `1.5`).<br/>
+e.g. `['avatar' => ['required', 'image', 'dimension:max_width=1920,max_height=1080']]`<br/>
+e.g. `['avatar' => ['required',  'image', 'dimension:min_width=100,min_height=100,ratio=16/9']]`
 31. **`extensions:ext1,ext2,...`**<br/>
 Checks if the file has one of the specified extensions (based on filename only, no content inspection). Accepts comma-separated extensions without dots.<br/>
 e.g. `['document' => ['required', 'file', 'extensions:pdf,doc,docx']]`

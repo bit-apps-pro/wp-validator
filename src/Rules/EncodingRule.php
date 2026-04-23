@@ -37,9 +37,8 @@ class EncodingRule extends Rule
 
     private function getFileContentForEncodingDetection($filePath)
     {
-        if (function_exists('WP_Filesystem')) {
+        if (function_exists('WP_Filesystem') && WP_Filesystem()) {
             global $wp_filesystem;
-            WP_Filesystem();
             $contents = $wp_filesystem->get_contents($filePath);
             return $contents !== false ? substr($contents, 0, 32768) : false;
         }
