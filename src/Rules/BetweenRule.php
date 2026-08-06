@@ -17,6 +17,7 @@ class BetweenRule extends Rule
         $this->checkRequiredParameter($this->requireParameters);
 
         $min = (int) $this->getParameter('min');
+
         $max = (int) $this->getParameter('max');
 
         $length = $this->getValueLength($value);
@@ -24,7 +25,7 @@ class BetweenRule extends Rule
         if ($length) {
             return $length >= $min && $length <= $max;
         }
-        
+
         return false;
 
     }

@@ -8,7 +8,7 @@ class NullableRule extends Rule
 
     private $message = '';
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return true;
     }

@@ -7,7 +7,7 @@ class LowercaseRule extends Rule
 {
     private $message = "The :attribute must be in lowercase";
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return $value === strtolower($value);
     }

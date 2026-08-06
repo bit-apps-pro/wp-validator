@@ -7,7 +7,7 @@ class UppercaseRule extends Rule
 {
     private $message = "The :attribute must be in uppercase";
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return $value === strtoupper($value);
     }

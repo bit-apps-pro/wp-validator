@@ -27,17 +27,18 @@
   },
     "scripts":{
         "test:unit":"./vendor/bin/pest --testdox --colors=always tests/ --exclude-group db",
-        "compat": "./vendor/bin/phpcs  -p ./src --standard=PHPCompatibility --runtime-set testVersion 5.6",
-        "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
-        "post-update-cmd" : "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility"
+        "compat": "./vendor/bin/phpcs  -p ./src --standard=PHPCompatibility --runtime-set testVersion 7.2",
+        "rector": "./vendor/bin/rector process --dry-run"
     },
+
     "require": {
-        "php": ">=5.6"
+        "php": ">=7.2"
       },
     "require-dev": {
         "pestphp/pest": "^2.18",
         "squizlabs/php_codesniffer":"*",
-        "phpcompatibility/php-compatibility": "*"
+        "phpcompatibility/php-compatibility": "*",
+        "rector/rector": "^1.2"
     },
     "minimum-stability": "stable",
     "config": {

@@ -9,8 +9,9 @@ class SameRule extends Rule
 
     protected $requireParameters = ['other'];
 
-    public function validate($value)
+    public function validate($value): bool
     {
+
         $this->checkRequiredParameter($this->requireParameters);
 
         $otherValue = $this->getInputDataContainer()->getAttributeValue($this->getParameter('other'));

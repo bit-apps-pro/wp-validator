@@ -23,7 +23,7 @@ abstract class Rule
         return $this->inputDataContainer;
     }
 
-    public function setInputDataContainer($inputDataContainer)
+    public function setInputDataContainer(InputDataContainer $inputDataContainer): void
     {
         $this->inputDataContainer = $inputDataContainer;
     }
@@ -44,7 +44,7 @@ abstract class Rule
         return $this->paramKeys;
     }
 
-    public function setParameterValues($paramKeys, $paramValues)
+    public function setParameterValues($paramKeys, $paramValues): void
     {
         if (count($paramKeys) === count($paramValues)) {
             $this->params = array_combine($paramKeys, $paramValues);
@@ -59,7 +59,7 @@ abstract class Rule
         return null;
     }
 
-    public function setRuleName($ruleName)
+    public function setRuleName($ruleName): void
     {
         $this->roleName = $ruleName;
     }

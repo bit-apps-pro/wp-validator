@@ -7,7 +7,7 @@ class IntegerRule extends Rule
 {
     private $message = "The :attribute must be an integer";
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return filter_var($value, FILTER_VALIDATE_INT) !== false;
     }

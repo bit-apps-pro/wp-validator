@@ -176,22 +176,25 @@ Checks if the field under validation is present and not empty. A field is "empty
     - The value is an empty string.
     - The value is an empty array.
     - A value of `FALSE` is not empty and continues through validation.
-20. **`same:field`**<br/>
+
+20. **`present`**<br/>
+The field must be present in the input data for validation.
+21. **`same:field`**<br/>
 Checks if the field under validation is equal to the specified `:other` attribute.
-21. **`size:value`**<br/>
+22. **`size:value`**<br/>
 Checks if the field under validation has exactly the same size as `:size`.
     - For string data, the value corresponds to the number of characters.
     - For numeric data, the value corresponds to a given integer value.
     - For an array, the value corresponds to the count of the array.
-22. **`string`**<br/>
+23. **`string`**<br/>
 Checks if the given value is a string.
-23. **`uppercase`**<br/>
+24. **`uppercase`**<br/>
 Checks if the string value consists of all uppercase letters.
-24. **`sql_identifier`**<br/>
+25. **`sql_identifier`**<br/>
 Validates one unqualified identifier segment. It does not quote SQL.
-25. **`sort_direction`**<br/>
+26. **`sort_direction`**<br/>
 Validates `asc` or `desc`. It does not add an `ORDER BY` clause.
-26. **`url`**<br/>
+27. **`url`**<br/>
 Checks if the value is a valid URL.
 
 Missing any validation rule that you need? Refer to the [Custom Validation Rule](#custom-validation-rule) section to know how you can create and use custom validation rules in your project alongside the library.
@@ -216,6 +219,52 @@ nullable skips later rules for an omitted value, null, an empty string, or an em
 array. A false value continues through later validation; do not use nullable for
 security-sensitive sort fields unless the request layer has already removed/defaulted
 empty input.
+
+### Available sanitization functions
+1. **`sanitize_email`**<br/>
+Strip out all characters that are not allowable in an email address.<br/>
+e.g. `['email' => ['required', 'email', 'sanitize:email']`
+
+2. **`sanitize_file_name`**<br/>
+Sanitizes a file name by removing special characters.<br/>
+e.g `['file' => ['required', 'string', 'sanitize:file_name']`
+
+3. **`sanitize_html_class`**<br/>
+Sanitize content with allowed HTML tags for class attribute.<br/>
+e.g `['class' => ['required', 'string', 'sanitize:html_class']`
+
+4. **`sanitize_key`**<br/>
+Sanitize content with allowed HTML tags for key attribute.<br/>
+e.g `['key' => ['required', 'string', 'sanitize:sanitize_key']`
+
+5. **`sanitize_text`**<br/>
+Strip out all characters that are not allowable in a string.<br/>
+e.g. `['name' => ['required', 'string', 'sanitize:text']`
+
+6. **`sanitize_textarea_field`**<br/>
+Sanitize content with allowed HTML tags for textarea field.<br/>
+e.g `['content' => ['required', 'string', 'sanitize:textarea']`
+
+7. **`sanitize_title`**<br/>
+Strip out all characters that are not allowable in a title.<br/>
+e.g. `['title' => ['required', 'string', 'sanitize:title']`
+
+8. **`sanitize_user`**<br/>
+Sanitize a username, striping out unsafe characters.<br/>
+e.g `['user' => ['required', 'string', 'sanitize:user']`
+
+9. **`sanitize_url`**<br/>
+Sanitizes a URL by removing invalid characters for safe use in HTML attributes.<br/>
+e.g. `['url' => ['required', 'url', 'sanitize:url']`
+
+10. **`wp_kses`**<br/>
+Sanitize content with allowed HTML tags.<br/>
+e.g `['content' => ['required', 'string', 'sanitize:wp_kses|a.href,a.title,br,em,strong']`
+
+11. **`wp_kses_post`**<br/>
+Sanitize content with allowed HTML tags for post content.<br/>
+e.g `['content' => ['required', 'string', 'sanitize:wp_kses_post']`
+
 
 ### Custom Validation Rule
 

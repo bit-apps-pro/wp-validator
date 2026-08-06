@@ -10,7 +10,7 @@ class RequiredRule extends Rule
 
     private $message = 'The :attribute field is required';
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return !$this->isEmpty($value);
     }

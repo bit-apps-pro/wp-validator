@@ -1,4 +1,4 @@
-name: PHP 5.6 Parse and Smoke
+name: PHP 7.2 Parse and Smoke
 
 on:
   push:
@@ -6,15 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  php56-parse-smoke:
+  php72-parse-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up PHP 5.6
+      - name: Set up PHP 7.2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '5.6'
+          php-version: '7.2'
           coverage: none
           tools: none
 
@@ -36,7 +36,7 @@ jobs:
               || !$direction->validate("DESC")
               || $direction->validate("desc ")
               || $direction->validate(0)) {
-              fwrite(STDERR, "PHP 5.6 SQL structure rule smoke check failed\n");
+              fwrite(STDERR, "PHP 7.2 SQL structure rule smoke check failed\n");
               exit(1);
           }
           '

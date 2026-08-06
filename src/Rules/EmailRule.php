@@ -7,7 +7,7 @@ class EmailRule extends Rule
 {
     private $message = "The :attribute must be a valid email address";
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }

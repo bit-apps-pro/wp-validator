@@ -7,7 +7,7 @@ class ObjectRule extends Rule
 {
     private $message = "The :attribute must be object";
 
-    public function validate($value)
+    public function validate($value): bool
     {
         return is_object($value);
     }

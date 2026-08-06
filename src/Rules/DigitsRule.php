@@ -9,7 +9,7 @@ class DigitsRule extends Rule
 
     private $requireParameters = ['digits'];
 
-    public function validate($value)
+    public function validate($value): bool
     {
         $this->checkRequiredParameter($this->requireParameters);
 

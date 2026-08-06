@@ -6,7 +6,9 @@ use BitApps\WPValidator\Rules\SameRule;
 test('same', function () {
 
     $rule = new SameRule();
+
     $paramKeys = ['other'];
+
     $paramValues = ['confirm_password'];
 
     $data = [

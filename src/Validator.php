@@ -1,5 +1,4 @@
 <?php
-
 namespace BitApps\WPValidator;
 
 use BitApps\WPValidator\Exception\MethodNotFoundException;
@@ -38,7 +37,7 @@ class Validator
         return $this;
     }
 
-    public function processAndValidateField($field, $rules)
+    public function processAndValidateField($field, $rules): void
     {
         $attributeLabel = $field;
 
@@ -49,7 +48,7 @@ class Validator
         }
     }
 
-    public function processWildcardFieldKey($field)
+    public function processWildcardFieldKey($field): array
     {
         if (strpos($field, '*') === false) {
             return [$field];
@@ -61,19 +60,19 @@ class Validator
 
         while ($head = array_shift($nestedKeyQueue)) {
             if (trim($head) === '*') {
-                $keys = array_keys((array) $dataByKey);
+                $keys      = array_keys((array) $dataByKey);
                 $dataByKey = count($keys) && \array_key_exists($keys[0], $dataByKey) ? $dataByKey[$keys[0]] : [];
             } else {
                 $keys      = [$head];
                 $dataByKey = \array_key_exists($head, $dataByKey) ? $dataByKey[$head] : [];
             }
 
-            if (empty($visitedFieldKeys)) {
+            if ($visitedFieldKeys === []) {
                 foreach ($keys as $keyToVisit) {
                     $visitedFieldKeys[$keyToVisit] = 1;
                 }
             } else {
-                foreach ($visitedFieldKeys as $key => $v) {
+                foreach (array_keys($visitedFieldKeys) as $key) {
                     foreach ($keys as $keyToVisit) {
                         unset($visitedFieldKeys[$key]);
                         $visitedFieldKeys["{$key}.{$keyToVisit}"] = 1;
@@ -85,13 +84,9 @@ class Validator
         return array_keys($visitedFieldKeys);
     }
 
-    public function validateField($fieldKey, $rules, $fieldLabel)
+    public function validateField($fieldKey, $rules, $fieldLabel): void
     {
-        if (isset($this->_attributeLabels[$fieldLabel])) {
-            $attributeLabel = $this->_attributeLabels[$fieldLabel];
-        } else {
-            $attributeLabel = $fieldKey;
-        }
+        $attributeLabel = isset($this->_attributeLabels[$fieldLabel]) ? $this->_attributeLabels[$fieldLabel] : $fieldKey;
 
         $this->inputContainer->setAttributeKey($fieldKey);
 
@@ -99,24 +94,29 @@ class Validator
 
         $value = $this->inputContainer->getAttributeValue();
 
-        $this->setValidatedData($fieldKey, $this->_data, $value);
-
         if (\in_array('nullable', $rules) && $this->isEmpty($value)) {
+            $this->setValidatedData($fieldKey, $this->inputContainer->getData(), $value);
             return;
         }
 
         $this->validateByRules($fieldKey, $value, $rules);
+        $this->setValidatedData($fieldKey, $this->inputContainer->getData(), $this->inputContainer->getAttributeValue());
     }
 
-    public function validateByRules($fieldKey, $value, $rules)
+    public function validateByRules($fieldKey, $value, $rules): void
     {
+        $validationRules = [];
+
         foreach ($rules as $ruleName) {
             if (\is_string($ruleName) && strpos($ruleName, 'sanitize') !== false) {
-                $this->applyFilter($ruleName, $fieldKey, $value);
-
-                continue;
+                $value = $this->applyFilter($ruleName, $value);
+                $this->inputContainer->setAttributeValue($value);
+            } else {
+                $validationRules[] = $ruleName;
             }
+        }
 
+        foreach ($validationRules as $ruleName) {
             if (is_subclass_of($ruleName, Rule::class)) {
                 $ruleClass = \is_object($ruleName) ? $ruleName : new $ruleName();
             } else {
@@ -127,23 +127,27 @@ class Validator
             $ruleClass->setInputDataContainer($this->inputContainer);
             $ruleClass->setRuleName($ruleName);
 
-            if (!empty($paramValues)) {
+            if (! empty($paramValues)) {
                 $ruleClass->setParameterValues($ruleClass->getParamKeys(), $paramValues);
             }
 
             $isValidated = $ruleClass->validate($this->inputContainer->getAttributeValue());
 
-            if (!$isValidated) {
+            if (! $isValidated) {
                 $this->errorBag->addError($ruleClass, $this->_customMessages);
 
+                break;
+            }
+
+            if ($ruleName === 'present' && $this->isEmpty($value)) {
                 break;
             }
         }
     }
 
-    public function fails()
+    public function fails(): bool
     {
-        return !empty($this->errorBag->getErrors()) ? true : false;
+        return ! empty($this->errorBag->getErrors());
     }
 
     public function errors()
@@ -158,27 +162,27 @@ class Validator
 
     private function resolveRule($ruleName)
     {
-        if (!\is_string($ruleName)) {
+        if (! \is_string($ruleName)) {
             throw new RuleErrorException('Rule name must be string ');
         }
 
         $ruleClass = __NAMESPACE__
-            . '\\Rules\\'
-            . str_replace(' ', '', ucwords(str_replace('_', ' ', $ruleName)))
+        . '\\Rules\\'
+        . str_replace(' ', '', ucwords(str_replace('_', ' ', $ruleName)))
             . 'Rule';
 
-        if (!class_exists($ruleClass)) {
+        if (! class_exists($ruleClass)) {
             throw new RuleErrorException(sprintf('Unsupported validation rule: %s.', $ruleName));
         }
 
         return new $ruleClass();
     }
 
-    private function parseRule($rule)
+    private function parseRule($rule): array
     {
-        $exp = explode(':', $rule, 2);
+        $exp      = explode(':', $rule, 2);
         $ruleName = $exp[0];
-        $params = [];
+        $params   = [];
 
         if (isset($exp[1])) {
             $params = explode(',', $exp[1]);
@@ -187,33 +191,32 @@ class Validator
         return [$ruleName, $params];
     }
 
-    private function applyFilter($sanitize, $fieldName, $value)
+    private function applyFilter($sanitize, $value)
     {
         $data = explode('|', $sanitize);
 
         $sanitizeName = isset($data[0]) ? explode(':', $data[0]) : [];
-        $params = isset($data[1]) ? explode(',', $data[1]) : [];
+        $params       = isset($data[1]) ? explode(',', $data[1]) : [];
 
         if (\count($sanitizeName) === 2) {
             list($prefix, $suffix) = $sanitizeName;
-            $sanitizationMethod = $prefix . str_replace('_', '', ucwords($suffix, '_'));
+            $sanitizationMethod    = $prefix . str_replace('_', '', ucwords($suffix, '_'));
 
-            if (!method_exists($this, $sanitizationMethod)) {
+            if (! method_exists($this, $sanitizationMethod)) {
                 throw new MethodNotFoundException($sanitizationMethod);
             }
 
-            $sanitizedValue = $this->{$sanitizationMethod}($value, $params);
-
-            $keys = explode('.', trim($fieldName, '[]'));
-            if (\count($keys) > 1) {
-                $this->setNestedElement($this->validated, $keys, $sanitizedValue);
+            if ($sanitizationMethod === 'sanitizeWpkses' && ! empty($params)) {
+                $value = $this->{$sanitizationMethod}($value, $params);
             } else {
-                $this->validated[$fieldName] = $sanitizedValue;
+                $value = $this->{$sanitizationMethod}($value);
             }
         }
+
+        return $value;
     }
 
-    private function setValidatedData($field, $data, $value)
+    private function setValidatedData($field, $data, $value): void
     {
         $keys = explode('.', trim($field, '[]'));
 
