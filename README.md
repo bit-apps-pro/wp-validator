@@ -326,6 +326,15 @@ It will refer to the value parameter of `size` validation rule.
 
 We welcome contributions from the community. If you find a bug or have a feature suggestion, please open an issue or submit a pull request.
 
+### Running Tests
+
+```bash
+composer test:unit    # run the suite once
+composer test:watch   # re-run it whenever a PHP file changes
+```
+
+Run `./bin/test-watch -h` for the watcher's options.
+
 # License
 
 This package is open-source and available under the MIT License.

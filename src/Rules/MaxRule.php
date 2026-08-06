@@ -18,13 +18,7 @@ class MaxRule extends Rule
 
         $max = (int) $this->getParameter('max');
 
-        $length = $this->getValueLength($value);
-
-        if ($length === false) {
-            return false;
-        }
-
-        return $length <= $max;
+        return $this->lengthWithin($value, null, $max);
     }
 
     public function getParamKeys()
