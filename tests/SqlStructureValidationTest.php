@@ -33,8 +33,8 @@ test('returns the first labeled error for each malicious SQL structure value', f
             'sortOrder' => 'desc; DROP',
         ],
         [
-            'sortBy' => ['required', 'sql_identifier'],
-            'sortOrder' => ['required', 'sort_direction'],
+            'sortBy' => ['required', 'sql_identifier', 'uppercase'],
+            'sortOrder' => ['required', 'sort_direction', 'uppercase'],
         ],
         [],
         [
