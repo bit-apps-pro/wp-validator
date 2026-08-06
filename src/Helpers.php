@@ -42,7 +42,11 @@ trait Helpers
                 $current->$key = new stdClass();
             }
 
-            $current = &$current[$key] ?? $current->$key;
+            if (is_array($current)) {
+                $current = &$current[$key];
+            } else {
+                $current = &$current->$key;
+            }
         }
 
         $current = $value;
