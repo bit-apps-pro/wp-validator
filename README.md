@@ -186,10 +186,34 @@ Checks if the field under validation has exactly the same size as `:size`.
 Checks if the given value is a string.
 23. **`uppercase`**<br/>
 Checks if the string value consists of all uppercase letters.
-24. **`url`**<br/>
+24. **`sql_identifier`**<br/>
+Validates one unqualified identifier segment. It does not quote SQL.
+25. **`sort_direction`**<br/>
+Validates `asc` or `desc`. It does not add an `ORDER BY` clause.
+26. **`url`**<br/>
 Checks if the value is a valid URL.
 
 Missing any validation rule that you need? Refer to the [Custom Validation Rule](#custom-validation-rule) section to know how you can create and use custom validation rules in your project alongside the library.
+
+### SQL Structure Validation
+
+Use `sql_identifier` and `sort_direction` to validate request fields that select a
+column and sort direction:
+
+```php
+$rules = [
+    'sortBy'    => ['required', 'string', 'sql_identifier'],
+    'sortOrder' => ['required', 'string', 'sort_direction'],
+];
+```
+
+sql_identifier validates one unqualified identifier segment. It does not quote SQL.
+sort_direction validates asc/desc. It does not add an ORDER BY clause.
+sanitize:text and sanitize:key are not SQL-context security controls.
+Raw SQL still requires typed identifier handling in the database layer.
+nullable skips later rules for values the validator considers empty, including an
+empty string and empty array; do not use nullable for security-sensitive sort fields
+unless the request layer has already removed/defaulted empty input.
 
 ### Custom Validation Rule
 
