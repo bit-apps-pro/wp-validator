@@ -20,12 +20,11 @@ class MaxRule extends Rule
 
         $length = $this->getValueLength($value);
 
-        if ($length) {
-            return $length <= $max;
+        if ($length === false) {
+            return false;
         }
 
-        return false;
-
+        return $length <= $max;
     }
 
     public function getParamKeys()

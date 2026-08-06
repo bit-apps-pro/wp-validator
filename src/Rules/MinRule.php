@@ -20,12 +20,11 @@ class MinRule extends Rule
 
         $length = $this->getValueLength($value);
 
-        if ($length) {
-            return $length >= $min;
+        if ($length === false) {
+            return false;
         }
 
-        return false;
-
+        return $length >= $min;
     }
 
     public function getParamKeys()
