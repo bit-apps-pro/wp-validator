@@ -1,0 +1,144 @@
+#!/bin/sh
+#
+# Re-run the unit test suite whenever a PHP file under src/ or tests/ changes.
+#
+# Usage:
+#   composer test:watch
+#   ./bin/test-watch [-i INTERVAL] [-- <extra pest args>]
+#
+# Options:
+#   -i INTERVAL  Seconds between change checks (default: 2)
+#   -h           Show this help
+#
+# Uses plain polling so it works anywhere PHP does, with no extra dependencies.
+
+set -eu
+
+ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+WATCH_DIRS="src tests"
+INTERVAL=2
+
+usage() {
+    cat <<'EOF'
+Re-run the unit test suite whenever a PHP file under src/ or tests/ changes.
+
+Usage:
+  composer test:watch
+  ./bin/test-watch [-i INTERVAL] [-- <extra pest args>]
+
+Options:
+  -i INTERVAL  Seconds between change checks (default: 2)
+  -h           Show this help
+EOF
+}
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -i)
+            [ $# -ge 2 ] || { echo "test-watch: -i requires a value" >&2; exit 1; }
+            INTERVAL=$2
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "test-watch: unknown option '$1'" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+case $INTERVAL in
+    ''|*[!0-9.]*)
+        echo "test-watch: interval must be a number, got '$INTERVAL'" >&2
+        exit 1
+        ;;
+esac
+
+cd "$ROOT_DIR"
+
+if ! command -v composer >/dev/null 2>&1; then
+    echo "test-watch: composer not found on PATH." >&2
+    exit 1
+fi
+
+if [ ! -x vendor/bin/pest ]; then
+    echo "test-watch: vendor/bin/pest not found. Run 'composer install' first." >&2
+    exit 1
+fi
+
+# Resolve the watched dirs and the available find(1) dialect once, not per tick.
+WATCH_EXISTING=''
+for dir in $WATCH_DIRS; do
+    [ -d "$dir" ] && WATCH_EXISTING="$WATCH_EXISTING $dir"
+done
+
+if [ -z "$WATCH_EXISTING" ]; then
+    echo "test-watch: none of the watched directories ($WATCH_DIRS) exist." >&2
+    exit 1
+fi
+
+if find . -maxdepth 0 -printf '' 2>/dev/null; then
+    HAVE_PRINTF=1
+else
+    HAVE_PRINTF=0
+fi
+
+# Build a fingerprint of every watched PHP file: size + mtime + path.
+# Any add, delete, or edit changes the resulting string.
+#
+# %T@ is a fractional-second epoch mtime, so same-size edits made within
+# the same second are still detected. GNU find only; the stat fallback
+# covers BSD/macOS.
+fingerprint() {
+    # shellcheck disable=SC2086
+    if [ "$HAVE_PRINTF" = 1 ]; then
+        find $WATCH_EXISTING -type f -name '*.php' -printf '%s %T@ %p\n' 2>/dev/null | sort
+    else
+        find $WATCH_EXISTING -type f -name '*.php' \
+            -exec stat -f '%z %m %N' {} + 2>/dev/null | sort
+    fi
+}
+
+run_tests() {
+    printf '\033[2J\033[H'
+    echo "──────────────────────────────────────────────────"
+    echo " Running unit tests…"
+    echo "──────────────────────────────────────────────────"
+    echo
+
+    # Delegate to the canonical suite definition in composer.json so the
+    # watcher can never drift from `composer test:unit`.
+    # Never let a failing suite kill the watcher.
+    if composer --no-interaction test:unit -- "$@"; then
+        status='PASS'
+    else
+        status='FAIL'
+    fi
+
+    echo
+    echo "──────────────────────────────────────────────────"
+    echo " $status · watching src/ and tests/ · Ctrl-C to stop"
+    echo "──────────────────────────────────────────────────"
+}
+
+trap 'printf "\ntest-watch: stopped.\n"; exit 0' INT TERM
+
+previous=$(fingerprint)
+run_tests "$@"
+
+while true; do
+    sleep "$INTERVAL"
+    current=$(fingerprint)
+    if [ "$current" != "$previous" ]; then
+        previous=$current
+        run_tests "$@"
+    fi
+done
