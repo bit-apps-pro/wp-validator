@@ -36,6 +36,10 @@ trait Helpers
         $current = &$data;
 
         foreach ($keys as $key) {
+            if (is_null($current)) {
+                $current = [];
+            }
+
             if (is_array($current) && !isset($current[$key])) {
                 $current[$key] = [];
             } elseif (is_object($current) && !isset($current->$key)) {
