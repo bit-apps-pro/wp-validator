@@ -27,7 +27,7 @@
   },
     "scripts":{
         "test:unit":"./vendor/bin/pest --testdox --colors=always tests/ --exclude-group db",
-        "compat": "./vendor/bin/phpcs  -p ./src --standard=PHPCompatibility --runtime-set testVersion 7.2",
+        "compat": "./vendor/bin/phpcs  -p ./src --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 7.4-",
         "rector": "./vendor/bin/rector process --dry-run"
     },
 
