@@ -25,6 +25,16 @@ trait Helpers
 
     }
 
+    protected function getAttachmentSizeBytes(int $attachmentId, string $filePath)
+    {
+        $metadata = wp_get_attachment_metadata($attachmentId);
+        if ($metadata && isset($metadata['filesize'])) {
+            return (int) $metadata['filesize'];
+        }
+
+        return filesize($filePath);
+    }
+
     public function setNestedElement(&$data, $keys, $value)
     {
         $current = &$data;

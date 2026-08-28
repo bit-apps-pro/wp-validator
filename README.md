@@ -134,6 +134,8 @@ Checks if the field under validation falls within the range of `:min` and `:max`
     - For string data, the value corresponds to the number of characters.
     - For numeric data, the value corresponds to a given integer value.
     - For an array, the value corresponds to the count of the array.
+    - For file uploads (`$_FILES` array or WordPress attachment ID), the value corresponds to the file size in kilobytes.<br/>
+    e.g. `['avatar' => ['required', 'file', 'between:100,2048']]` (between 100KB and 2MB)
 4. **`date`**<br/>
 Checks if the field under validation is a valid date according to the `strtotime` PHP function.
 5. **`digit_between:min,max`**<br/>
@@ -185,12 +187,39 @@ Checks if the field under validation has exactly the same size as `:size`.
     - For string data, the value corresponds to the number of characters.
     - For numeric data, the value corresponds to a given integer value.
     - For an array, the value corresponds to the count of the array.
+    - For file uploads (`$_FILES` array or WordPress attachment ID), the value corresponds to the file size in kilobytes.<br/>
+    e.g. `['document' => ['required', 'file', 'size:512']]` (exactly 512KB)
 23. **`string`**<br/>
 Checks if the given value is a string.
 24. **`uppercase`**<br/>
 Checks if the string value consists of all uppercase letters.
 25. **`url`**<br/>
 Checks if the value is a valid URL.
+26. **`file`**<br/>
+Checks if the field under validation is a valid file upload. Supports standard PHP `$_FILES` arrays and WordPress attachment IDs.<br/>
+e.g. `['avatar' => ['required', 'file']]`
+27. **`mimes:type1,type2,...`**<br/>
+Checks if the file under validation has one of the allowed MIME types or extensions. Accepts comma-separated values (e.g., `jpg`, `png`, `pdf`).<br/>
+e.g. `['document' => ['required', 'file', 'mimes:pdf,doc,docx']]`
+28. **`max_file:size`**<br/>
+Checks if the file size (in kilobytes) is less than or equal to the specified maximum size.<br/>
+e.g. `['avatar' => ['required', 'file', 'max_file:2048']]` (2MB limit)
+29. **`image`**<br/>
+Checks if the file under validation is an image using WordPress allowed image MIME types.<br/>
+e.g. `['photo' => ['required', 'file', 'image']]`
+30. **`dimension:constraint=value,...`**<br/>
+Checks image dimensions against one or more constraints. Available constraints: `min_width`, `max_width`, `min_height`, `max_height`, `width` (exact), `height` (exact), `ratio` (as fraction `3/2` or float `1.5`).<br/>
+e.g. `['avatar' => ['required', 'image', 'dimension:max_width=1920,max_height=1080']]`<br/>
+e.g. `['avatar' => ['required',  'image', 'dimension:min_width=100,min_height=100,ratio=16/9']]`
+31. **`extensions:ext1,ext2,...`**<br/>
+Checks if the file has one of the specified extensions (based on filename only, no content inspection). Accepts comma-separated extensions without dots.<br/>
+e.g. `['document' => ['required', 'file', 'extensions:pdf,doc,docx']]`
+32. **`mimetypes:type1,type2,...`**<br/>
+Checks if the file's actual MIME type (verified from file content via `wp_check_filetype_and_ext`) matches one of the specified types. More secure than `mimes` because it inspects file content, not just the filename or browser-supplied type.<br/>
+e.g. `['upload' => ['required', 'file', 'mimetypes:image/jpeg,image/png,application/pdf']]`
+33. **`encoding:enc1,enc2,...`**<br/>
+Checks if the file's character encoding matches one of the specified encodings. Useful for validating text files (CSV, JSON, XML, etc.). Accepts comma-separated encoding names supported by PHP's `mb_detect_encoding`.<br/>
+e.g. `['csv' => ['required', 'file', 'encoding:UTF-8,ASCII']]`
 
 Missing any validation rule that you need? Refer to the [Custom Validation Rule](#custom-validation-rule) section to know how you can create and use custom validation rules in your project alongside the library.
 
