@@ -167,14 +167,15 @@ Checks if the field under validation has a minimum value of `:min`.
     - For numeric data, the value corresponds to a given integer value.
     - For an array, the value corresponds to the count of the array.
 17. **`nullable`**<br/>
-Makes the field under validation as optional (allows to be null), but respects other validation rules if specified and value is not null.
+Skips later validation rules when the field is omitted, `null`, an empty string, or an empty array. A value of `false` continues through later validation rules.
 18. **`numeric`**<br/>
 Checks if the field under validation is a valid real number.
 19. **`required`**<br/>
 Checks if the field under validation is present and not empty. A field is "empty" if it meets one of the following criteria:
-    - The value is `NULL` or `FALSE`.
+    - The field is omitted or the value is `NULL`.
     - The value is an empty string.
-    - The value is an empty array or empty countable object.
+    - The value is an empty array.
+    - A value of `FALSE` is not empty and continues through validation.
 
 20. **`present`**<br/>
 The field must be present in the input data for validation.
@@ -189,10 +190,35 @@ Checks if the field under validation has exactly the same size as `:size`.
 Checks if the given value is a string.
 24. **`uppercase`**<br/>
 Checks if the string value consists of all uppercase letters.
-25. **`url`**<br/>
+25. **`sql_identifier`**<br/>
+Validates one unqualified identifier segment. It does not quote SQL.
+26. **`sort_direction`**<br/>
+Validates `asc` or `desc`. It does not add an `ORDER BY` clause.
+27. **`url`**<br/>
 Checks if the value is a valid URL.
 
 Missing any validation rule that you need? Refer to the [Custom Validation Rule](#custom-validation-rule) section to know how you can create and use custom validation rules in your project alongside the library.
+
+### SQL Structure Validation
+
+Use `sql_identifier` and `sort_direction` to validate request fields that select a
+column and sort direction:
+
+```php
+$rules = [
+    'sortBy'    => ['required', 'string', 'sql_identifier'],
+    'sortOrder' => ['required', 'string', 'sort_direction'],
+];
+```
+
+sql_identifier validates one unqualified identifier segment. It does not quote SQL.
+sort_direction validates asc/desc. It does not add an ORDER BY clause.
+sanitize:text and sanitize:key are not SQL-context security controls.
+Raw SQL still requires typed identifier handling in the database layer.
+nullable skips later rules for an omitted value, null, an empty string, or an empty
+array. A false value continues through later validation; do not use nullable for
+security-sensitive sort fields unless the request layer has already removed/defaulted
+empty input.
 
 ### Available sanitization functions
 1. **`sanitize_email`**<br/>
