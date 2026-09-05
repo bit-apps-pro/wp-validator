@@ -34,7 +34,7 @@ class InputDataContainer
 
         if (count($keys) > 1) {
             $data = $this->getValueFromPath($keys, $data);
-        } elseif (isset($data[$key])) {
+        } elseif ($key && isset($data[$key])) {
             return $data[$key];
         } elseif (isset($data[$this->attributeKey])) {
             return $data[$this->attributeKey];
