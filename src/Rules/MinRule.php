@@ -18,14 +18,7 @@ class MinRule extends Rule
 
         $min = (int) $this->getParameter('min');
 
-        $length = $this->getValueLength($value);
-
-        if ($length) {
-            return $length >= $min;
-        }
-
-        return false;
-
+        return $this->lengthWithin($value, $min);
     }
 
     public function getParamKeys()

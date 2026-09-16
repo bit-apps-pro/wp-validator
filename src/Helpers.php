@@ -25,6 +25,28 @@ trait Helpers
 
     }
 
+    /**
+     * Check a value's length against an inclusive range.
+     *
+     * A length of 0 is a valid length; only values with no measurable
+     * length at all (bool, null, object) fail outright. Pass null for
+     * an open-ended bound.
+     */
+    protected function lengthWithin($value, $min = null, $max = null): bool
+    {
+        $length = $this->getValueLength($value);
+
+        if ($length === false) {
+            return false;
+        }
+
+        if ($min !== null && $length < $min) {
+            return false;
+        }
+
+        return $max === null || $length <= $max;
+    }
+
     public function setNestedElement(&$data, $keys, $value)
     {
         $current = &$data;

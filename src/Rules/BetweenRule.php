@@ -20,14 +20,7 @@ class BetweenRule extends Rule
 
         $max = (int) $this->getParameter('max');
 
-        $length = $this->getValueLength($value);
-
-        if ($length) {
-            return $length >= $min && $length <= $max;
-        }
-
-        return false;
-
+        return $this->lengthWithin($value, $min, $max);
     }
 
     public function getParamKeys()
