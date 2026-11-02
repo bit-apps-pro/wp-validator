@@ -1,0 +1,42 @@
+name: PHP 7.2 Parse and Smoke
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  php72-parse-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 7.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+          coverage: none
+          tools: none
+
+      - name: Parse source files
+        run: find src -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Smoke SQL structure rules
+        run: |
+          php -r '
+          require "src/Rule.php";
+          require "src/Rules/SqlIdentifierRule.php";
+          require "src/Rules/SortDirectionRule.php";
+
+          $identifier = new \BitApps\WPValidator\Rules\SqlIdentifierRule();
+          $direction = new \BitApps\WPValidator\Rules\SortDirectionRule();
+
+          if (!$identifier->validate("sort_column")
+              || $identifier->validate("users.sort_column")
+              || !$direction->validate("DESC")
+              || $direction->validate("desc ")
+              || $direction->validate(0)) {
+              fwrite(STDERR, "PHP 7.2 SQL structure rule smoke check failed\n");
+              exit(1);
+          }
+          '
