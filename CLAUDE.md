@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `bitapps/wp-validator` — a Composer library (PSR-4: `BitApps\WPValidator\` → [src/](src/)) providing Laravel-style validation and sanitization for WordPress. Public API and the full rule list are documented in [README.md](README.md); update it when adding a rule or sanitizer.
 
-**PHP 7.2 is the floor.** No typed properties, no arrow functions, no null coalescing assignment, no union types. Return types on methods are used and fine. [rector.php](rector.php) pins `PhpVersion::PHP_72` and skips the typed-property rectors for this reason.
+**PHP 7.4 is the floor.** No union types or other PHP 8+ syntax. Return types on methods are used and fine. [rector.php](rector.php) pins `PhpVersion::PHP_74` and skips the typed-property rectors.
 
 ## Commands
 
@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 composer test:unit                                  # full suite (Pest, --testdox, excludes group 'db')
 ./vendor/bin/pest tests/Rules/BetweenTest.php       # single file
 ./vendor/bin/pest --filter='between accepts a length of zero'   # single test by name
-composer compat                                     # PHPCompatibility check against PHP 7.2
+composer compat                                     # PHPCompatibility check against PHP 7.4
 composer rector                                     # Rector dry-run (never auto-applies)
 ```
 
