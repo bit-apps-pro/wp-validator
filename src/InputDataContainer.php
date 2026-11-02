@@ -7,7 +7,7 @@ class InputDataContainer
 
     private $data = [];
 
-    private $attributeKey;
+    private $attributeKey = '';
 
     private $attributeLabel;
 
@@ -18,7 +18,7 @@ class InputDataContainer
 
     public function setAttributeKey($key): void
     {
-        $this->attributeKey = $key;
+        $this->attributeKey = $key ?? '';
     }
 
     public function getAttributeKey()
@@ -28,22 +28,17 @@ class InputDataContainer
 
     public function getAttributeValue($key = null)
     {
-        $keys = explode('.', trim($this->attributeKey ?? '', '[]'));
-
-        $data = $this->data;
+        $keys = explode('.', trim($this->attributeKey, '[]'));
 
         if (count($keys) > 1) {
-            $data = $this->getValueFromPath($keys, $data);
-        } elseif ($key && isset($data[$key])) {
-            return $data[$key];
-        } elseif (isset($data[$this->attributeKey])) {
-            return $data[$this->attributeKey];
-        } else {
-            return null;
+            return $this->getValueFromPath($keys, $this->data);
         }
 
-        return $data;
+        if ($key !== null && isset($this->data[$key])) {
+            return $this->data[$key];
+        }
 
+        return $this->data[$this->attributeKey] ?? null;
     }
 
     public function setAttributeLabel($value): void
@@ -63,7 +58,7 @@ class InputDataContainer
 
     public function setAttributeValue($value): void
     {
-        $keys = explode('.', trim($this->attributeKey ?? '', '[]'));
+        $keys = explode('.', trim($this->attributeKey, '[]'));
 
         if (\count($keys) > 1) {
             $this->setNestedElement($this->data, $keys, $value);

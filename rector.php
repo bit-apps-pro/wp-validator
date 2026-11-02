@@ -13,7 +13,7 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/src',
     ])
-    ->withPhpVersion(PhpVersion::PHP_72)
+    ->withPhpVersion(PhpVersion::PHP_74)
     ->withSkip([
         UnwrapFutureCompatibleIfPhpVersionRector::class,
         TypedPropertyFromStrictConstructorRector::class,
@@ -29,4 +29,4 @@ return RectorConfig::configure()
         // strictBooleans: true,
         // naming: true,
     )
-    ->withSets([SetList::PHP_72]);
+    ->withSets([SetList::PHP_74]);
